@@ -1,24 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"go.uber.org/zap"
+	"mxshop/user_web/initialize"
 )
 
-func NewLogger()(*zap.Logger, error){
-	cfg := zap.NewProductionConfig()
-	cfg.OutputPaths = []string{
-		"./myproject.log",
-		"stderr",
-	}
-	return cfg.Build()
-}
-func main(){
-	logger, err := NewLogger()
-	if err != nil{
-		panic(err)
-	}
-	defer logger.Sync()
-	logger.Info("msg...")
+func main() {
 
-}
+	var port = 8021
+	initialize.InitLogger()
 
+	Router := initialize.Routers()
+	zap.S().Debugf("serve user server at %d", port)
+	if err := Router.Run(fmt.Sprintf(":%d", port)); err != nil {
+		zap.S().Panic("serve error", err.Error())
+	}
+}
