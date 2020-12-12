@@ -9,7 +9,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"mxshop/user_web/proto"
+	"mxshop/user_web/global/response"
 	"net/http"
+	"time"
 )
 
 func HandleGrpcErrorToHttp(err error, c *gin.Context){
@@ -65,14 +67,15 @@ func GetUserList(ctx *gin.Context){
 	}
 	result := make([]interface{}, 0)
 	for _, value := range rsp.Data {
-		data := make(map[string]interface{})
-		data["id"] = value.Id
-		data["mobile"] = value.Mobile
-		data["nickname"] = value.NickName
-		data["birthday"] = value.BirthDay
-		data["role"] = value.Role
-		data["gender"] = value.Gender
-		result = append(result, data)
+		user := response.UserResponse{
+			Id: value.Id,
+			NickName: value.NickName,
+			Birthday: time.Unix(int64(value.BirthDay), 0),
+			Role: value.Role,
+			Gender: value.Gender,
+			Mobile: value.Mobile,
+		}
+		result = append(result, user)
 	}
 	ctx.JSON(http.StatusOK, result)
 
