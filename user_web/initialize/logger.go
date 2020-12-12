@@ -9,5 +9,6 @@ func InitLogger(){
 		"stderr",
 	}
 	logger, _ := cfg.Build()
+	defer logger.Sync()
 	zap.ReplaceGlobals(logger)
 }
