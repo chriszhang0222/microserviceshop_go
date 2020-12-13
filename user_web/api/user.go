@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"mxshop/user_web/global/response"
 	"mxshop/user_web/proto"
+	"mxshop/user_web/global"
 	"net/http"
 	"time"
 )
@@ -47,8 +48,8 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 
 func GetUserList(ctx *gin.Context) {
 	zap.S().Debug("visit user list")
-	ip := "127.0.0.1"
-	port := 50058
+	ip := global.ServerConfig.UserSrvConfig.Host
+	port := global.ServerConfig.UserSrvConfig.Port
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
 	if err != nil {
 		zap.S().Errorw("[GetUserList] connect to user service failed", "msg", err.Error())
