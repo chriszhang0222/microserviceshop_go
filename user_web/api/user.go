@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -11,7 +12,9 @@ import (
 	"mxshop/user_web/global/response"
 	"mxshop/user_web/proto"
 	"mxshop/user_web/global"
+	"mxshop/user_web/forms"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -56,9 +59,13 @@ func GetUserList(ctx *gin.Context) {
 		return
 	}
 	userSrvClient := proto.NewUserClient(conn)
+	pn := ctx.DefaultQuery("pn", "0")
+	pnInt, _ := strconv.Atoi(pn)
+	pSize := ctx.DefaultQuery("pSize", "10")
+	pSizeInt, _ := strconv.Atoi(pSize)
 	pageInfo := &proto.PageInfo{
-		Pn:    0,
-		PSize: 0,
+		Pn:    uint32(pnInt),
+		PSize: uint32(pSizeInt),
 	}
 	rsp, err := userSrvClient.GetUserList(context.Background(), pageInfo)
 	if err != nil {
@@ -79,5 +86,25 @@ func GetUserList(ctx *gin.Context) {
 		result = append(result, user)
 	}
 	ctx.JSON(http.StatusOK, result)
+
+}
+
+func PasswordLogin(ctx *gin.Context){
+	passwordLoginForm := forms.PasswordLoginForm{}
+	if err := ctx.ShouldBind(&passwordLoginForm);err != nil{
+		errs, ok := err.(validator.ValidationErrors)
+		if !ok{
+			ctx.JSON(http.StatusOK, gin.H{
+				"msg": err.Error(),
+			})
+		}
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": errs.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+	})
 
 }
