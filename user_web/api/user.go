@@ -103,8 +103,35 @@ func PasswordLogin(ctx *gin.Context){
 		})
 		return
 	}
+	ip := global.ServerConfig.UserSrvConfig.Host
+	port := global.ServerConfig.UserSrvConfig.Port
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
+	if err != nil {
+		zap.S().Errorw("[GetUserList] connect to user service failed", "msg", err.Error())
+		return
+	}
+	userSrvClient := proto.NewUserClient(conn)
+
+	//login logic
+	rsp, err := userSrvClient.GetUserByMobile(context.Background(), &proto.MobileRequest{
+		Mobile: passwordLoginForm.Mobile,
+	})
+	if err != nil {
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	if passrsp, _ := userSrvClient.CheckPassword(context.Background(), &proto.PasswordCheckInfo{
+		Password: passwordLoginForm.Password,
+		EncryptedPassword: rsp.Password,
+	}); !passrsp.Success{
+		ctx.JSON(http.StatusOK, gin.H{
+			"msg": "Wrong Password",
+		})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "ok",
+		"msg": "Success",
 	})
 
 }
