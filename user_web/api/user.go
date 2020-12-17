@@ -3,13 +3,16 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"mxshop/user_web/middleware"
 	"mxshop/user_web/global/response"
+	"mxshop/user_web/models"
 	"mxshop/user_web/proto"
 	"mxshop/user_web/global"
 	"mxshop/user_web/forms"
@@ -129,9 +132,31 @@ func PasswordLogin(ctx *gin.Context){
 		})
 		return
 	}
+	j := middleware.NewJWT()
+	claims := models.CustomClaims{
+		ID: uint(rsp.Id),
+		NickName: rsp.NickName,
+		AuthorityId: uint(rsp.Role),
+		StandardClaims: jwt.StandardClaims{
+			NotBefore: time.Now().Unix(),
+			ExpiresAt: time.Now().Unix() + 60 * 60 * 24 * 7,  //7 days expire,
+			Issuer: "chris",
+		},
+	}
+	token, err := j.CreateToken(claims)
+	if err != nil{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg": "JWT Token Error",
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg": "Success",
+		"id": rsp.Id,
+		"nickname": rsp.NickName,
+		"token": token,
+		"expired_at": (time.Now().Unix() + 60 * 60 * 24 * 7)*1000,
 	})
 
 }
