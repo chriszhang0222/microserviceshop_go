@@ -52,6 +52,7 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 	}
 }
 
+// /user/list
 func GetUserList(ctx *gin.Context) {
 	zap.S().Debug("visit user list")
 	ip := global.ServerConfig.UserSrvConfig.Host
@@ -106,6 +107,14 @@ func PasswordLogin(ctx *gin.Context){
 		})
 		return
 	}
+
+	if !store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, true){
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"msg": "Wrong Captcha",
+		})
+		return
+	}
+
 	ip := global.ServerConfig.UserSrvConfig.Host
 	port := global.ServerConfig.UserSrvConfig.Port
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
