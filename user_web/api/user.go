@@ -169,3 +169,45 @@ func PasswordLogin(ctx *gin.Context){
 	})
 
 }
+
+func Register(ctx *gin.Context){
+	registerForm := forms.RegisterForm{}
+	if err := ctx.ShouldBind(&registerForm);err != nil{
+		errs, ok := err.(validator.ValidationErrors)
+		if !ok{
+			ctx.JSON(http.StatusOK, gin.H{
+				"msg": err.Error(),
+			})
+		}
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": errs.Error(),
+		})
+		return
+	}
+
+	ip := global.ServerConfig.UserSrvConfig.Host
+	port := global.ServerConfig.UserSrvConfig.Port
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
+	if err != nil {
+		zap.S().Errorw("[GetUserList] connect to user service failed", "msg", err.Error())
+		return
+	}
+	userSrvClient := proto.NewUserClient(conn)
+	rsp, err := userSrvClient.CreateUser(context.Background(), &proto.CreateUserInfo{
+		NickName: registerForm.Nickname,
+		Password: registerForm.Password,
+		Mobile: registerForm.Mobile,
+	});
+	if err != nil{
+		ctx.JSON(http.StatusOK, gin.H{
+			"msg": "Register Failed",
+			"detail": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"id": rsp.Id,
+		"msg": "Register Succeed",
+	})
+
+}

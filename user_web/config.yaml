@@ -10,4 +10,5 @@ jwt:
 redis:
   host: '192.168.0.10'
   port: 6379
+  expire: 300
 

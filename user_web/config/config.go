@@ -11,6 +11,7 @@ type JWTConfig struct {
 type RedisConfig struct{
 	Host string `mapstructure:"host"`
 	Port int    `mapstructure:"port"`
+	Expire int 	`mapstructure:"expire"`
 }
 type ServerConfig struct {
 	Name          string        `mapstructure:"name"`
