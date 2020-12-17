@@ -6,3 +6,8 @@ user_srv:
 
 jwt:
   key: 'zrz31415926'
+
+redis:
+  host: '192.168.0.10'
+  port: 6379
+
