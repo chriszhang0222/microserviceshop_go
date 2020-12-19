@@ -2,20 +2,18 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"mxshop/user_web/middleware"
+	"mxshop/user_web/forms"
+	"mxshop/user_web/global"
 	"mxshop/user_web/global/response"
+	"mxshop/user_web/middleware"
 	"mxshop/user_web/models"
 	"mxshop/user_web/proto"
-	"mxshop/user_web/global"
-	"mxshop/user_web/forms"
 	"net/http"
 	"strconv"
 	"time"
@@ -55,14 +53,8 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 // /user/list
 func GetUserList(ctx *gin.Context) {
 	zap.S().Debug("visit user list")
-	ip := global.ServerConfig.UserSrvConfig.Host
-	port := global.ServerConfig.UserSrvConfig.Port
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
-	if err != nil {
-		zap.S().Errorw("[GetUserList] connect to user service failed", "msg", err.Error())
-		return
-	}
-	userSrvClient := proto.NewUserClient(conn)
+	userSrvClient := global.UserSrvClient
+
 	pn := ctx.DefaultQuery("pn", "0")
 	pnInt, _ := strconv.Atoi(pn)
 	pSize := ctx.DefaultQuery("pSize", "10")
@@ -115,14 +107,7 @@ func PasswordLogin(ctx *gin.Context){
 		return
 	}
 
-	ip := global.ServerConfig.UserSrvConfig.Host
-	port := global.ServerConfig.UserSrvConfig.Port
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
-	if err != nil {
-		zap.S().Errorw("[GetUserList] connect to user service failed", "msg", err.Error())
-		return
-	}
-	userSrvClient := proto.NewUserClient(conn)
+	userSrvClient := global.UserSrvClient
 
 	//login logic
 	rsp, err := userSrvClient.GetUserByMobile(context.Background(), &proto.MobileRequest{
@@ -185,14 +170,7 @@ func Register(ctx *gin.Context){
 		return
 	}
 
-	ip := global.ServerConfig.UserSrvConfig.Host
-	port := global.ServerConfig.UserSrvConfig.Port
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", ip, port), grpc.WithInsecure())
-	if err != nil {
-		zap.S().Errorw("[GetUserList] connect to user service failed", "msg", err.Error())
-		return
-	}
-	userSrvClient := proto.NewUserClient(conn)
+	userSrvClient := global.UserSrvClient
 	rsp, err := userSrvClient.CreateUser(context.Background(), &proto.CreateUserInfo{
 		NickName: registerForm.Nickname,
 		Password: registerForm.Password,

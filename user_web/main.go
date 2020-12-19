@@ -14,6 +14,7 @@ func main() {
 
 	initialize.InitConfig()
 	initialize.InitLogger()
+	initialize.InitSrvConn()
 	var port = global.ServerConfig.Port
 
 	if v , ok := binding.Validator.Engine().(*validator.Validate);ok{
