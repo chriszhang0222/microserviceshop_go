@@ -52,9 +52,7 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 
 // /user/list
 func GetUserList(ctx *gin.Context) {
-	zap.S().Debug("visit user list")
 	userSrvClient := global.UserSrvClient
-
 	pn := ctx.DefaultQuery("pn", "0")
 	pnInt, _ := strconv.Atoi(pn)
 	pSize := ctx.DefaultQuery("pSize", "10")
