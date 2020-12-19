@@ -9,6 +9,7 @@ require (
 	github.com/go-redis/redis/v8 v8.4.4
 	github.com/hashicorp/consul v1.9.1 // indirect
 	github.com/hashicorp/consul/api v1.8.1
+	github.com/mbobakov/grpc-consul-resolver v1.4.3
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/spf13/viper v1.7.1
 	go.uber.org/multierr v1.6.0 // indirect
