@@ -19,6 +19,7 @@ type ConsulConfig struct {
 	Port int `mapstructure:"port"`
 }
 type ServerConfig struct {
+	Host	      string        `mapstructure:host`
 	Name          string        `mapstructure:"name"`
 	Port          int           `mapstructure:"port"`
 	UserSrvConfig UserSrvConfig `mapstructure:"user_srv"`

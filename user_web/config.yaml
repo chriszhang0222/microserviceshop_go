@@ -1,5 +1,6 @@
 name : 'user-web'
 port: 8021
+host: '192.168.0.14'
 user_srv:
   host: '192.168.0.14'
   port: 50058
