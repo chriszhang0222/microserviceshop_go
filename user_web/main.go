@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -10,13 +11,18 @@ import (
 	myvalidator "mxshop/user_web/validators"
 )
 
+var port int
+
+func parsePort(){
+	flag.IntVar(&port, "port", global.ServerConfig.Port, "Cache server port")
+	flag.Parse()
+}
 func main() {
 
 	initialize.InitConfig()
 	initialize.InitLogger()
 	initialize.InitSrvConn()
-	var port = global.ServerConfig.Port
-
+	parsePort()
 	if v , ok := binding.Validator.Engine().(*validator.Validate);ok{
 		v.RegisterValidation("mobile", myvalidator.ValidateMobile)
 	}

@@ -11,6 +11,7 @@ func InitConfig(){
 	v := viper.New()
 	v.SetConfigFile(configFileName)
 	if err := v.ReadInConfig();err != nil{
+		zap.S().Error(err.Error())
 		panic(err)
 	}
 	if err := v.Unmarshal(global.ServerConfig);err != nil{
