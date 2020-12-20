@@ -1,19 +1,25 @@
-name : 'user-web'
-port: 8021
-host: '192.168.0.14'
-user_srv:
-  host: '192.168.0.14'
-  port: 50058
-  name: 'user-srv'
-
-jwt:
-  key: 'zrz31415926'
-
-redis:
+#name : 'user-web'
+#port: 8021
+#host: '192.168.0.14'
+#user_srv:
+#  host: '192.168.0.14'
+#  port: 50058
+#  name: 'user-srv'
+#
+#jwt:
+#  key: 'zrz31415926'
+#
+#redis:
+#  host: '192.168.0.10'
+#  port: 6379
+#  expire: 300
+#
+#consul:
+#  host: '192.168.0.10'
+#  port: 8500
+nacos:
   host: '192.168.0.10'
-  port: 6379
-  expire: 300
-
-consul:
-  host: 192.168.0.10
-  port: 8500
+  port: 8848
+  namespace: 'f8bdaf7d-b24e-4080-bcf8-afefc8bcc659'
+  dataId: 'user-web.json'
+  group: 'dev'

@@ -26,12 +26,12 @@ func parsePort(){
 
 
 func RegisterConsul(addr string, port int, id string, name string, tags ...string){
-	consul_host := global.ServerConfig.ConsulInfo.Host
-	consul_port := global.ServerConfig.ConsulInfo.Port
-	register_client = register.NewRegistryClient(consul_host, consul_port)
+	consulHost := global.ServerConfig.ConsulInfo.Host
+	consulPort := global.ServerConfig.ConsulInfo.Port
+	register_client = register.NewRegistryClient(consulHost, consulPort)
 	err := register_client.Register(addr, port, id, name, tags)
 	if err == nil {
-		zap.S().Infof("Register to consul %s:%d", consul_host, consul_port)
+		zap.S().Infof("Register to consul %s:%d", consulHost, consulPort)
 	}else{
 		zap.S().Error("Fail to register consul")
 	}

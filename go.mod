@@ -21,6 +21,7 @@ require (
 	github.com/mitchellh/go-testing-interface v1.14.0 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/mojocn/base64Captcha v1.3.1
+	github.com/nacos-group/nacos-sdk-go v1.0.3
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect

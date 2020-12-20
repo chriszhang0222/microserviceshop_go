@@ -7,6 +7,7 @@ import (
 
 var (
 	ServerConfig *config.ServerConfig = &config.ServerConfig{}
+	NacosConfig *config.InitConfig = &config.InitConfig{}
 
 	UserSrvClient proto.UserClient
 
