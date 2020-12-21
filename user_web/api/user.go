@@ -131,7 +131,7 @@ func PasswordLogin(ctx *gin.Context){
 		AuthorityId: uint(rsp.Role),
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix(),
-			ExpiresAt: time.Now().Unix() + 60 * 60 * 24 * 7,  //7 days expire,
+			ExpiresAt: time.Now().Unix() + 60 * 60 * 24 * 30,  //7 days expire,
 			Issuer: "chris",
 		},
 	}

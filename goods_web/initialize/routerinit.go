@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"mxshop/goods_web/middleware"
+	"mxshop/goods_web/routers"
 )
 
 func InitRouter() *gin.Engine{
@@ -15,5 +16,7 @@ func InitRouter() *gin.Engine{
 		})
 	})
 	Router.Use(middleware.Cors())
+	ApiGroup := Router.Group("/v1")
+	routers.InitGoodsRouter(ApiGroup)
 	return Router
 }
