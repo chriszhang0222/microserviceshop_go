@@ -17,7 +17,7 @@ import (
 )
 
 var port int
-var register_client register.RegistryClient
+var registerClient register.RegistryClient
 
 func parsePort(){
 	flag.IntVar(&port, "port", global.ServerConfig.Port, "Cache server port")
@@ -28,8 +28,8 @@ func parsePort(){
 func RegisterConsul(addr string, port int, id string, name string, tags ...string){
 	consulHost := global.ServerConfig.ConsulInfo.Host
 	consulPort := global.ServerConfig.ConsulInfo.Port
-	register_client = register.NewRegistryClient(consulHost, consulPort)
-	err := register_client.Register(addr, port, id, name, tags)
+	registerClient = register.NewRegistryClient(consulHost, consulPort)
+	err := registerClient.Register(addr, port, id, name, tags)
 	if err == nil {
 		zap.S().Infof("Register to consul %s:%d", consulHost, consulPort)
 	}else{
@@ -60,7 +60,7 @@ func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	if err := register_client.DeRegister(serviceId); err != nil {
+	if err := registerClient.DeRegister(serviceId); err != nil {
 		zap.S().Info("Failed to deregister from consul:", err.Error())
 	}else{
 		zap.S().Info("Derigister from consul")
