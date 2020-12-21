@@ -51,10 +51,12 @@ func main() {
 	serviceId := fmt.Sprintf("%s", uuid.NewV4())
 
 	RegisterConsul(serverConfig.Host, port, serviceId, serverConfig.Name)
-	if err := Router.Run(fmt.Sprintf(":%d", port)); err != nil {
-		zap.S().Panic("serve error", err.Error())
-	}
-	zap.S().Debugf("serve user server at %d", port)
+	go func() {
+		if err := Router.Run(fmt.Sprintf(":%d", port)); err != nil {
+			zap.S().Panic("serve error", err.Error())
+		}
+		zap.S().Debugf("serve user server at %d", port)
+	}()
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
