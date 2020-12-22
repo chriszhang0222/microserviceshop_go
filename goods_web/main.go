@@ -40,7 +40,7 @@ func main(){
 	Router := initialize.InitRouter()
 	serverConfig := global.ServerConfig
 	serviceId := fmt.Sprintf("%s", uuid.NewV4())
-	RegisterConsul(serverConfig.Host, port, serviceId, serverConfig.Name)
+	RegisterConsul(serverConfig.Host, port, serviceId, serverConfig.Name, "mxshop")
 	go func() {
 		if err := Router.Run(fmt.Sprintf(":%d", port)); err != nil {
 			zap.S().Panic("serve error", err.Error())
