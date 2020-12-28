@@ -13,7 +13,44 @@ import (
 
 
 func List(ctx *gin.Context){
-	request := &proto.GoodsFilterRequest{}
+	price_min := ctx.DefaultQuery("pmin", "0")
+	priceMin, _ := strconv.Atoi(price_min)
+	price_max := ctx.DefaultQuery("pmax", "999999999")
+	priceMax, _ := strconv.Atoi(price_max)
+	request := &proto.GoodsFilterRequest{
+		PriceMin: int32(priceMin),
+		PriceMax: int32(priceMax),
+	}
+	isHot := ctx.DefaultQuery("ih", "0")
+	if isHot == "1"{
+		request.IsHot = true
+	}
+	isNew := ctx.DefaultQuery("in", "0")
+	if isNew == "1"{
+		request.IsNew = true
+	}
+	isTab := ctx.DefaultQuery("it", "0")
+	if isTab == "1"{
+		request.IsTab = true
+	}
+	categoryId := ctx.DefaultQuery("c", "0")
+	categoryIdInt, _ := strconv.Atoi(categoryId)
+	request.TopCategory = int32(categoryIdInt)
+
+	pages := ctx.DefaultQuery("p", "0")
+	pagesInt, _ := strconv.Atoi(pages)
+	request.Pages = int32(pagesInt)
+
+	perNums := ctx.DefaultQuery("pnum", "0")
+	perNumsInt, _ := strconv.Atoi(perNums)
+	request.PagePerNums = int32(perNumsInt)
+
+	keywords := ctx.DefaultQuery("q", "")
+	request.KeyWords = keywords
+
+	brandId := ctx.DefaultQuery("b", "0")
+	brandIdInt, _ := strconv.Atoi(brandId)
+	request.Brand = int32(brandIdInt)
 	goodsSrvClient := global.GoodsSrvClient
 	list, err := goodsSrvClient.GoodsList(context.Background(), request)
 	if err != nil {
