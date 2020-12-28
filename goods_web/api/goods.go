@@ -142,3 +142,66 @@ func Delete(ctx *gin.Context){
 	ctx.Status(http.StatusOK)
 	return
 }
+
+func Update(ctx *gin.Context){
+	goodsForm := forms.GoodsForm{}
+	if err:= ctx.ShouldBindJSON(ctx);err != nil{
+		HandleValidatorError(ctx, err)
+		return
+	}
+	id := ctx.Param("id")
+	i, err := strconv.ParseInt(id, 10, 32)
+	if _, err = global.GoodsSrvClient.UpdateGoods(context.Background(), &proto.CreateGoodsInfo{
+		Id: int32(i),
+		Name:            goodsForm.Name,
+		GoodsSn:         goodsForm.GoodsSn,
+		Stocks:          goodsForm.Stocks,
+		MarketPrice:     goodsForm.MarketPrice,
+		ShopPrice:       goodsForm.ShopPrice,
+		GoodsBrief:      goodsForm.GoodsBrief,
+		ShipFree:        *goodsForm.ShipFree,
+		Images:          goodsForm.Images,
+		DescImages:      goodsForm.DescImages,
+		GoodsFrontImage: goodsForm.FrontImage,
+		CategoryId:      goodsForm.CategoryId,
+		BrandId:         goodsForm.BrandId,
+	});err != nil{
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Update Successfully",
+	})
+}
+
+func Stocks(ctx *gin.Context){
+	id := ctx.Param("id")
+	_, err := strconv.ParseInt(id, 10, 32)
+	if err != nil{
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+	return
+}
+
+func UpdateStatus(ctx *gin.Context){
+	goodsStatusForm := forms.GoodsStatusForm{}
+	if err := ctx.ShouldBindJSON(&goodsStatusForm);err != nil{
+		HandleValidatorError(ctx, err)
+		return
+	}
+	id := ctx.Param("id")
+	i, err := strconv.ParseInt(id, 10, 32)
+	if _, err = global.GoodsSrvClient.UpdateGoods(context.Background(), &proto.CreateGoodsInfo{
+		Id: int32(i),
+		IsHot: *goodsStatusForm.IsNew,
+		IsNew: *goodsStatusForm.IsNew,
+		OnSale: *goodsStatusForm.OnSale,
+	});err != nil{
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg": "Success",
+	})
+}

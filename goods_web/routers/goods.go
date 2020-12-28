@@ -12,5 +12,8 @@ func InitGoodsRouter(Router *gin.RouterGroup){
 		GoodsRouter.POST("", api.New)
 		GoodsRouter.GET("/:id", api.GoodsDetail)
 		GoodsRouter.DELETE("/:id", api.Delete)
+		GoodsRouter.GET("/:id/stocks", api.Stocks)
+		GoodsRouter.PUT("/:id", api.Update)
+		GoodsRouter.PATCH("/:id", api.UpdateStatus)
 	}
 }
