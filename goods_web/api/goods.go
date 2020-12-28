@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"mxshop/goods_web/forms"
 	"mxshop/goods_web/global"
 	"mxshop/goods_web/proto"
 	"net/http"
@@ -95,26 +95,50 @@ func GoodsDetail(ctx *gin.Context){
 
 }
 
-func CategoryList(ctx *gin.Context){
-	goodsSrvClient := global.GoodsSrvClient
-	list, err := goodsSrvClient.GetAllCategorysList(context.Background(), &emptypb.Empty{})
-	if err != nil{
-		zap.S().Errorw("[CategoryList] Failed to query Goods list")
+
+func New(ctx *gin.Context){
+	goodsForm := forms.GoodsForm{}
+	if err := ctx.ShouldBindJSON(&goodsForm); err != nil{
+		HandleValidatorError(ctx, err)
+		return
+	}
+	goodClient := global.GoodsSrvClient
+	rsp, err := goodClient.CreateGoods(context.Background(), &proto.CreateGoodsInfo{
+		Name: goodsForm.Name,
+		GoodsSn: goodsForm.GoodsSn,
+		Stocks: goodsForm.Stocks,
+		MarketPrice: goodsForm.MarketPrice,
+		ShopPrice: goodsForm.ShopPrice,
+		GoodsBrief: goodsForm.GoodsBrief,
+		ShipFree: *goodsForm.ShipFree,
+		Images: goodsForm.Images,
+		DescImages:      goodsForm.DescImages,
+		GoodsFrontImage: goodsForm.FrontImage,
+		CategoryId:      goodsForm.CategoryId,
+		BrandId:         goodsForm.BrandId,
+	})
+	if err != nil {
 		HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
-	res := gin.H{}
-	res["total"] = list.Total
-	categoryList := make([]interface{}, 0)
-	for _, value := range list.Data{
-		categoryList = append(categoryList, map[string]interface{}{
-			"id": value.Id,
-			"name": value.Name,
-			"level": value.Level,
-			"istab": value.IsTab,
-			"parent": value.ParentCategory,
-		})
+	ctx.JSON(http.StatusOK, rsp)
+}
+
+func Delete(ctx *gin.Context){
+	id := ctx.Param("id")
+	i, err := strconv.ParseInt(id, 10, 32)
+	if err != nil{
+		ctx.Status(http.StatusNotFound)
+		return
 	}
-	res["data"] = categoryList
-	ctx.JSON(http.StatusOK, res)
+	goodsClient := global.GoodsSrvClient
+	_, err = goodsClient.DeleteGoods(context.Background(), &proto.DeleteGoodsInfo{
+		Id: int32(i),
+	})
+	if err != nil{
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	ctx.Status(http.StatusOK)
+	return
 }

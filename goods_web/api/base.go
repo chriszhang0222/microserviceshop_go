@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
@@ -36,4 +37,18 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 			return
 		}
 	}
+}
+
+func HandleValidatorError(ctx *gin.Context, err error){
+	errs, ok := err.(validator.ValidationErrors)
+	if !ok{
+		ctx.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+	}
+	ctx.JSON(http.StatusBadRequest, gin.H{
+		"error": errs,
+	})
+	return
+
 }

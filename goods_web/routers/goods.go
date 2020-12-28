@@ -3,14 +3,14 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"mxshop/goods_web/api"
-	"mxshop/goods_web/middleware"
 )
 
 func InitGoodsRouter(Router *gin.RouterGroup){
 	GoodsRouter := Router.Group("goods")
 	{
 		GoodsRouter.GET("", api.List)
-		GoodsRouter.GET("category", middleware.JWTAUth(), api.CategoryList)
-		GoodsRouter.GET("detail/:id", api.GoodsDetail)
+		GoodsRouter.POST("", api.New)
+		GoodsRouter.GET("/:id", api.GoodsDetail)
+		GoodsRouter.DELETE("/:id", api.Delete)
 	}
 }
