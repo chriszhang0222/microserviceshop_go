@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"mxshop/goods_web/forms"
 	"mxshop/goods_web/global"
 	"mxshop/goods_web/proto"
 	"net/http"
@@ -34,4 +35,27 @@ func BrandList(ctx *gin.Context){
 	}
 	response["data"] = result
 	ctx.JSON(http.StatusOK, response)
+}
+
+func NewBrand(ctx *gin.Context){
+	brandForm := forms.BrandForm{}
+	if err := ctx.ShouldBindJSON(&brandForm);err != nil{
+		HandleValidatorError(ctx, err)
+		return
+	}
+	rsp, err := global.GoodsSrvClient.CreateBrand(context.Background(), &proto.BrandRequest{
+		Name: brandForm.Name,
+		Logo: brandForm.Logo,
+	})
+	if err != nil {
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	request := gin.H{}
+	request["id"] = rsp.Id
+	request["name"] = rsp.Name
+	request["logo"] = rsp.Logo
+
+	ctx.JSON(http.StatusOK, request)
+
 }

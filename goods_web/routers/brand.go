@@ -9,5 +9,6 @@ func InitBrandRouter(Router *gin.RouterGroup){
 	BrandRouter := Router.Group("brands")
 	{
 		BrandRouter.GET("", api.BrandList)
+		BrandRouter.POST("", api.NewBrand)
 	}
 }
