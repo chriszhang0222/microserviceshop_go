@@ -53,11 +53,7 @@ func main(){
 	if err := registerClient.DeRegister(serviceId);err != nil{
 		zap.S().Info("Failed to deregister from consul:", err.Error())
 	}else{
-		zap.S().Info("Derigister from consul")
+		zap.S().Info("Deregister from consul")
 	}
-
-
-
-
 }
 
