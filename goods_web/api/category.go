@@ -2,9 +2,10 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"mxshop/goods_web/forms"
 	"mxshop/goods_web/global"
 	"mxshop/goods_web/proto"
@@ -14,27 +15,21 @@ import (
 )
 
 func CategoryList(ctx *gin.Context){
-	goodsSrvClient := global.GoodsSrvClient
-	list, err := goodsSrvClient.GetAllCategorysList(context.Background(), &emptypb.Empty{})
-	if err != nil{
-		zap.S().Errorw("[CategoryList] Failed to query Goods list")
-		HandleGrpcErrorToHttp(err, ctx)
+	r, err := global.GoodsSrvClient.GetAllCategorysList(context.Background(), &empty.Empty{})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
-	res := gin.H{}
-	res["total"] = list.Total
-	categoryList := make([]interface{}, 0)
-	for _, value := range list.Data{
-		categoryList = append(categoryList, map[string]interface{}{
-			"id": value.Id,
-			"name": value.Name,
-			"level": value.Level,
-			"istab": value.IsTab,
-			"parent": value.ParentCategory,
-		})
+
+	data := make([]interface{}, 0)
+	err = json.Unmarshal([]byte(r.JsonData), &data)
+	if err != nil {
+		zap.S().Errorw("[List] 查询 【分类列表】失败： ", err.Error())
+		ctx.Status(http.StatusInternalServerError)
+		return
 	}
-	res["data"] = categoryList
-	ctx.JSON(http.StatusOK, res)
+
+	ctx.JSON(http.StatusOK, data)
 }
 
 func CategoryDetail(ctx *gin.Context){

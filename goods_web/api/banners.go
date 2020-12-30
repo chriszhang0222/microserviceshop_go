@@ -3,59 +3,102 @@ package api
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/ptypes/empty"
 	"mxshop/goods_web/forms"
 	"mxshop/goods_web/global"
 	"mxshop/goods_web/proto"
+	"mxshop/user_web/api"
 	"net/http"
 	"strconv"
 )
 
-func BrandList(ctx *gin.Context){
-	pn := ctx.DefaultQuery("pn", "0")
-	pnInt, _ := strconv.Atoi(pn)
-	pSize := ctx.DefaultQuery("psize", "10")
-	pSizeInt, _ := strconv.Atoi(pSize)
-	rsp, err := global.GoodsSrvClient.BrandList(context.Background(), &proto.BrandFilterRequest{
-		Pages: int32(pnInt),
-		PagePerNums: int32(pSizeInt),
-	})
-	if err != nil{
-		HandleGrpcErrorToHttp(err, ctx)
+func BannerList(ctx *gin.Context) {
+	rsp, err := global.GoodsSrvClient.BannerList(context.Background(), &empty.Empty{})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
+
 	result := make([]interface{}, 0)
-	response := gin.H{}
-	response["total"] = rsp.Total
 	for _, value := range rsp.Data {
 		reMap := make(map[string]interface{})
 		reMap["id"] = value.Id
-		reMap["name"] = value.Name
-		reMap["logo"] = value.Logo
+		reMap["index"] = value.Index
+		reMap["image"] = value.Image
+		reMap["url"] = value.Url
+
 		result = append(result, reMap)
 	}
-	response["data"] = result
-	ctx.JSON(http.StatusOK, response)
+
+	ctx.JSON(http.StatusOK, result)
 }
 
-func NewBrand(ctx *gin.Context){
-	brandForm := forms.BrandForm{}
-	if err := ctx.ShouldBindJSON(&brandForm);err != nil{
+func NewBanner(ctx *gin.Context) {
+	bannerForm := forms.BannerForm{}
+	if err := ctx.ShouldBindJSON(&bannerForm); err != nil {
 		HandleValidatorError(ctx, err)
 		return
 	}
-	rsp, err := global.GoodsSrvClient.CreateBrand(context.Background(), &proto.BrandRequest{
-		Name: brandForm.Name,
-		Logo: brandForm.Logo,
+
+	rsp, err := global.GoodsSrvClient.CreateBanner(context.Background(), &proto.BannerRequest{
+		Index:      int32(bannerForm.Index),
+		Url: bannerForm.Url,
+		Image: bannerForm.Image,
 	})
 	if err != nil {
-		HandleGrpcErrorToHttp(err, ctx)
+		api.HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
-	request := gin.H{}
-	request["id"] = rsp.Id
-	request["name"] = rsp.Name
-	request["logo"] = rsp.Logo
 
-	ctx.JSON(http.StatusOK, request)
+	response := make(map[string]interface{})
+	response["id"] = rsp.Id
+	response["index"] = rsp.Index
+	response["url"] = rsp.Url
+	response["image"] = rsp.Image
 
+	ctx.JSON(http.StatusOK, response)
+}
+
+func UpdateBanner(ctx *gin.Context) {
+	bannerForm := forms.BannerForm{}
+	if err := ctx.ShouldBindJSON(&bannerForm); err != nil {
+		HandleValidatorError(ctx, err)
+		return
+	}
+
+	id := ctx.Param("id")
+	i, err := strconv.ParseInt(id, 10, 32)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	_, err = global.GoodsSrvClient.UpdateBanner(context.Background(), &proto.BannerRequest{
+		Id:         int32(i),
+		Index:      int32(bannerForm.Index),
+		Url:       bannerForm.Url,
+	})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}
+
+
+func DeleteBanner(ctx *gin.Context) {
+	id := ctx.Param("id")
+	i, err := strconv.ParseInt(id, 10, 32)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+	_, err = global.GoodsSrvClient.DeleteBanner(context.Background(), &proto.BannerRequest{Id: int32(i)})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "")
 }
