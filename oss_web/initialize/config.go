@@ -58,7 +58,7 @@ func readFromNacos(){
 	if err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal([]byte(content), &global.Serverconfig)
+	err = json.Unmarshal([]byte(content), &global.ServerConfig)
 	if err != nil{
 		zap.S().Fatalf("Read nacos config failed： %s", err.Error())
 	}
