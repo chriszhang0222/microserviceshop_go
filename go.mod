@@ -3,6 +3,7 @@ module mxshop
 go 1.14
 
 require (
+	github.com/aliyun/aliyun-oss-go-sdk v2.1.5+incompatible
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
