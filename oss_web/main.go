@@ -44,7 +44,7 @@ func main(){
 		if err := Router.Run(fmt.Sprintf(":%d", port)); err != nil {
 			zap.S().Panic("serve error", err.Error())
 		}
-		zap.S().Debugf("serve goods server at %d", port)
+		zap.S().Debugf("serve oss server at %d", port)
 	}()
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
