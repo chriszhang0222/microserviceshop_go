@@ -9,4 +9,6 @@ var (
 	ServerConfig *config.ServerConfig = &config.ServerConfig{}
 	NacosConfig *config.InitConfig = &config.InitConfig{}
 	OrderSrvClient proto.OrderClient
+	GoodsSrvClient proto.GoodsClient
+	InventorySrvClient proto.InventoryClient
 )
