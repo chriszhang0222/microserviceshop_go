@@ -10,7 +10,7 @@ func InitShopCart(Router *gin.RouterGroup){
 	ShopCartRouter := Router.Group("shopcarts").Use(middleware.JWTAUth())
 	{
 		ShopCartRouter.GET("", api.ShoppingCartList)
-		ShopCartRouter.POST("")
+		ShopCartRouter.POST("", api.ShoppingCartNew)
 		ShopCartRouter.DELETE("/:id")
 		ShopCartRouter.PATCH("/:id")
 	}
