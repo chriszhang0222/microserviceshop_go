@@ -11,7 +11,7 @@ import (
 )
 
 func InitConfig(){
-	configFileName := "goods_web/config.yaml"
+	configFileName := "order_web/config.yaml"
 	v := viper.New()
 	v.SetConfigFile(configFileName)
 	if err := v.ReadInConfig(); err != nil{
