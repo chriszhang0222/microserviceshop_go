@@ -32,5 +32,6 @@ func main(){
 	initialize.InitConfig()
 	initialize.InitLogger()
 	parsePort()
+	initialize.InitSrvConn()
 
 }

@@ -21,10 +21,15 @@ type ConsulConfig struct {
 	Port int    `mapstructure:"port" json:"port"`
 }
 
+type OrderSrvConfig struct {
+	Name string `mapstructure:"name" json:"name"`
+}
+
 type ServerConfig struct {
 	Host          string        `mapstructure:"host" json:"host"`
 	Name          string        `mapstructure:"name" json:"name"`
 	Port          int           `mapstructure:"port" json:"port"`
 	ConsulInfo    ConsulConfig  `mapstructure:"consul" json:"consul"`
 	JWTInfo       JWTConfig     `mapstructure:"jwt" json:"jwt"`
+	OrderSrvInfo OrderSrvConfig  `mapstructrue:"order_srv" json:"order_srv"`
 }
