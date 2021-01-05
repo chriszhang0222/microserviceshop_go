@@ -8,6 +8,7 @@ import (
 	"mxshop/order_web/global"
 	"mxshop/order_web/proto"
 	"net/http"
+	"strconv"
 )
 
 func ShoppingCartList(ctx *gin.Context){
@@ -107,6 +108,48 @@ func ShoppingCartNew(ctx *gin.Context){
 		"id": rsp.Id,
 		"success": true,
 	})
+}
 
+func UpdateShoppingCart(ctx *gin.Context){
+	id := ctx.Param("id")
+	i, _ := strconv.Atoi(id)
+	itemForm := forms.ShopCartItemUpdateForm{}
+	if err := ctx.ShouldBindJSON(&itemForm); err != nil {
+		HandleValidatorError(ctx, err)
+		return
+	}
+	userId, _ := ctx.Get("userId")
+	request := proto.CartItemRequest{
+		UserId:  int32(userId.(uint)),
+		GoodsId: int32(i),
+		Nums:    itemForm.Num,
+		Checked: false,
+	}
+	if itemForm.Checked != nil {
+		request.Checked = *itemForm.Checked
+	}
+	_, err := global.OrderSrvClient.UpdateCartItem(context.Background(), &request)
+	if err!= nil {
+		zap.S().Errorw("更新购物车记录失败")
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	ctx.Status(http.StatusOK)
+}
 
+func DeleteShoppingCart(ctx *gin.Context){
+	id := ctx.Param("id")
+
+	i, _ := strconv.Atoi(id)
+	userId, _ := ctx.Get("userId")
+	_, err := global.OrderSrvClient.DeleteCartItem(context.Background(), &proto.CartItemRequest{
+		UserId:  int32(userId.(uint)),
+		GoodsId: int32(i),
+	})
+	if err != nil {
+		zap.S().Errorw("删除购物车记录失败")
+		HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	ctx.Status(http.StatusOK)
 }

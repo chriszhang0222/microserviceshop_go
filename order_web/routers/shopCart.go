@@ -11,7 +11,7 @@ func InitShopCart(Router *gin.RouterGroup){
 	{
 		ShopCartRouter.GET("", api.ShoppingCartList)
 		ShopCartRouter.POST("", api.ShoppingCartNew)
-		ShopCartRouter.DELETE("/:id")
-		ShopCartRouter.PATCH("/:id")
+		ShopCartRouter.DELETE("/:id", api.DeleteShoppingCart)
+		ShopCartRouter.PATCH("/:id", api.UpdateShoppingCart)
 	}
 }
