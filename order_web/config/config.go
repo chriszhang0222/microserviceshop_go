@@ -32,6 +32,6 @@ type ServerConfig struct {
 	ConsulInfo    ConsulConfig  `mapstructure:"consul" json:"consul"`
 	JWTInfo       JWTConfig     `mapstructure:"jwt" json:"jwt"`
 	OrderSrvInfo OrderSrvConfig  `mapstructrue:"order_srv" json:"order_srv"`
-	GoodsSrvInfo  OrderSrvConfig  `mapstructure:"goods_srv" json:"good_srv"`
+	GoodsSrvInfo  OrderSrvConfig  `mapstructure:"goods_srv" json:"goods_srv"`
 	InventoryInfo OrderSrvConfig  `mapstructure:"inventory_srv" json:"inventory_srv"`
 }
