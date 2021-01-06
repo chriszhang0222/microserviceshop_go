@@ -6,12 +6,15 @@ import (
 	"google.golang.org/grpc"
 	"mxshop/order_web/global"
 	"mxshop/order_web/proto"
+	"sync"
 )
 
+var wg sync.WaitGroup
 func InitSrvConn(){
 	consulInfo := global.ServerConfig.ConsulInfo
-
+	wg.Add(3)
 	go func() {
+		defer wg.Done()
 		orderConn, err := grpc.Dial(
 			fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.OrderSrvInfo.Name),
 			grpc.WithInsecure(),
@@ -25,6 +28,7 @@ func InitSrvConn(){
 	}()
 
 	go func() {
+		defer wg.Done()
 		goodsConn, err := grpc.Dial(
 			fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.GoodsSrvInfo.Name),
 			grpc.WithInsecure(),
@@ -38,6 +42,7 @@ func InitSrvConn(){
 	}()
 
 	go func() {
+		defer wg.Done()
 		invConn, err := grpc.Dial(
 			fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.InventoryInfo.Name),
 			grpc.WithInsecure(),
@@ -49,4 +54,5 @@ func InitSrvConn(){
 
 		global.InventorySrvClient = proto.NewInventoryClient(invConn)
 	}()
+	wg.Wait()
 }
