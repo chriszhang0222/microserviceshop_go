@@ -3,7 +3,6 @@ module mxshop
 go 1.14
 
 require (
-	github.com/aliyun/aliyun-oss-go-sdk v2.1.5+incompatible
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -25,6 +24,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/nacos-group/nacos-sdk-go v1.0.3
 	github.com/satori/go.uuid v1.2.0
+	github.com/smartwalle/alipay/v3 v3.1.5
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1

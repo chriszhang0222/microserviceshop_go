@@ -25,6 +25,14 @@ type OrderSrvConfig struct {
 	Name string `mapstructure:"name" json:"name"`
 }
 
+type AlipayConfig struct {
+	AppID        string `mapstructure:"app_id" json:"app_id"`
+	PrivateKey   string `mapstructure:"private_key" json:"private_key"`
+	AliPublicKey string `mapstructure:"ali_public_key" json:"ali_public_key"`
+	NotifyURL    string `mapstructure:"notify_url" json:"notify_url"`
+	ReturnURL    string `mapstructure:"return_url" json:"return_url"`
+}
+
 type ServerConfig struct {
 	Host          string        `mapstructure:"host" json:"host"`
 	Name          string        `mapstructure:"name" json:"name"`
@@ -34,4 +42,5 @@ type ServerConfig struct {
 	OrderSrvInfo OrderSrvConfig  `mapstructrue:"order_srv" json:"order_srv"`
 	GoodsSrvInfo  OrderSrvConfig  `mapstructure:"goods_srv" json:"goods_srv"`
 	InventoryInfo OrderSrvConfig  `mapstructure:"inventory_srv" json:"inventory_srv"`
+	AliPayInfo       AlipayConfig   `mapstructure:"alipay" json:"alipay"`
 }

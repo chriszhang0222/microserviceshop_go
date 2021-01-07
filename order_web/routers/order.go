@@ -13,4 +13,6 @@ func InitOrderRouter(Router *gin.RouterGroup){
 		OrderRouter.GET("/:id", api.OrderDetail)
 		OrderRouter.POST("", api.NewOrder)
 	}
+	PayRouter := Router.Group("pay")
+	PayRouter.POST("alipay/notify", api.AlipayNotify)
 }
