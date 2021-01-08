@@ -2,10 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"mxshop/userop_web/global"
 	"mxshop/userop_web/initialize"
 	"mxshop/userop_web/utils/register"
+	"os"
+	"os/signal"
+	"syscall"
 )
 var port int
 var registerClient register.RegistryClient
@@ -31,4 +36,22 @@ func main(){
 	initialize.InitConfig()
 	initialize.InitLogger()
 	parsePort()
+	Router := initialize.InitRouter()
+	serverConfig := global.ServerConfig
+	serviceId := fmt.Sprintf("%s", uuid.NewV4())
+	RegisterConsul(serverConfig.Host, port, serviceId, serverConfig.Name, "mxshop")
+	go func() {
+		if err := Router.Run(fmt.Sprintf(":%d", port)); err != nil {
+			zap.S().Panic("serve error", err.Error())
+		}
+		zap.S().Debugf("serve goods server at %d", port)
+	}()
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	if err := registerClient.DeRegister(serviceId);err != nil{
+		zap.S().Info("Failed to deregister from consul:", err.Error())
+	}else{
+		zap.S().Info("Deregister from consul")
+	}
 }
