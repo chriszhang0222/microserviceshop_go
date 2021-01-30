@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 	"time"
+	"regexp"
 )
 
 var wg sync.WaitGroup
@@ -21,11 +22,9 @@ func startService(ctx context.Context){
 		}
 	}
 }
+
 func main(){
-	wg.Add(1)
-	ctx, cancel := context.WithCancel(context.Background())
-	go startService(ctx)
-	time.Sleep(3*time.Second)
-	cancel()
-	wg.Wait()
+	email := "zhanr52@mcmaster.ca"
+	ok , _ := regexp.MatchString(`^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$`, email)
+	fmt.Println(ok)
 }

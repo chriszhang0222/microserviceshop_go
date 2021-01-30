@@ -45,6 +45,7 @@ func main() {
 	parsePort()
 	if v , ok := binding.Validator.Engine().(*validator.Validate);ok{
 		v.RegisterValidation("mobile", myvalidator.ValidateMobile)
+		v.RegisterValidation("email", myvalidator.ValidateEmail)
 	}
 	Router := initialize.Routers()
 	serverConfig := global.ServerConfig
