@@ -1,0 +1,20 @@
+syntax = "proto3";
+package proto;
+option go_package = ".;proto";
+
+service MessageServer{
+  rpc InsertMessageToDB(MessagePersistentRequest) returns(MessagePersistentResponse);
+}
+
+message MessagePersistentRequest{
+  int32 roomId = 1;
+  int32 userId = 2;
+  int32 companyId = 3;
+  string identifier = 4;
+  string message = 5;
+}
+
+message MessagePersistentResponse {
+  int32 code = 1;
+  string message = 2;
+}
