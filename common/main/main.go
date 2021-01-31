@@ -40,9 +40,4 @@ Loop:
 }
 
 func main(){
-	wg.Add(1)
-	go f()
-	time.Sleep(time.Second*3)
-	quit<-true
-	wg.Wait()
 }
