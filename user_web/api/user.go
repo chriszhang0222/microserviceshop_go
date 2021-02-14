@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 )
 
 func HandleGrpcErrorToHttp(err error, c *gin.Context) {
@@ -61,7 +62,10 @@ func GetUserList(ctx *gin.Context) {
 		Pn:    uint32(pnInt),
 		PSize: uint32(pSizeInt),
 	}
-	rsp, err := userSrvClient.GetUserList(context.Background(), pageInfo)
+	rsp, err := userSrvClient.GetUserList(context.Background(), pageInfo,
+		grpc_retry.WithMax(3),
+		grpc_retry.WithPerRetryTimeout(1 * time.Second),
+		grpc_retry.WithCodes(codes.Unknown, codes.DeadlineExceeded, codes.Unavailable))
 	if err != nil {
 		zap.S().Errorw("[GetUserList] failed")
 		HandleGrpcErrorToHttp(err, ctx)

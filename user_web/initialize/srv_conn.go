@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"mxshop/user_web/global"
 	"mxshop/user_web/proto"
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 )
 
 func InitSrvConn() {
@@ -18,7 +19,7 @@ func InitSrvConn() {
 		consulHost,
 		consulPort,
 		serviceName,
-		), grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`))
+		), grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`), grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor()))
 	if err != nil {
 		zap.S().Errorw("connect to user service failed", "msg", err.Error())
 		return
