@@ -6,20 +6,28 @@ import (
 	_ "github.com/mbobakov/grpc-consul-resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"mxshop/user_web/global"
 	"mxshop/user_web/proto"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
+	"time"
 )
 
 func InitSrvConn() {
 	consulHost := global.ServerConfig.ConsulInfo.Host
 	consulPort := global.ServerConfig.ConsulInfo.Port
 	serviceName := global.ServerConfig.UserSrvConfig.Name
+	retryOpts := []grpc_retry.CallOption{
+		grpc_retry.WithMax(3),
+		grpc_retry.WithPerRetryTimeout(1*time.Second),
+		grpc_retry.WithBackoff(grpc_retry.BackoffLinear(100 * time.Millisecond)),
+		grpc_retry.WithCodes(codes.NotFound, codes.Unavailable, codes.DeadlineExceeded),
+	}
 	userConn, err := grpc.Dial(fmt.Sprintf("consul://%s:%d/%s?wait=14s",
 		consulHost,
 		consulPort,
 		serviceName,
-		), grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`), grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor()))
+		), grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`), grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor(retryOpts...)))
 	if err != nil {
 		zap.S().Errorw("connect to user service failed", "msg", err.Error())
 		return
