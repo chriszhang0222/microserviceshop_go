@@ -1,5 +1,7 @@
 package config
-
+import (
+	"mxshop/common/config"
+)
 type NacosConfig struct {
 	Host      string `mapstructure:"host" json:"host"`
 	Port      int    `mapstructure:"port" json:"port"`
@@ -33,4 +35,5 @@ type ServerConfig struct {
 	ConsulInfo    ConsulConfig  `mapstructure:"consul" json:"consul"`
 	JWTInfo       JWTConfig     `mapstructure:"jwt" json:"jwt"`
 	GoodsSrvInfo  GoodsSrvConfig `mapstructure:"goods_srv" json:"goods_srv"`
+	JaegerInfo   config.JaegerConfig `mapstructure:"jaeger" json:"jaeger"`
 }
