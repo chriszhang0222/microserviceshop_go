@@ -52,7 +52,9 @@ func List(ctx *gin.Context){
 	brandIdInt, _ := strconv.Atoi(brandId)
 	request.Brand = int32(brandIdInt)
 	goodsSrvClient := global.GoodsSrvClient
-	list, err := goodsSrvClient.GoodsList(context.Background(), request)
+	context := context.WithValue(context.Background(), "ginContext", ctx)
+
+	list, err := goodsSrvClient.GoodsList(context, request)
 	if err != nil {
 		zap.S().Errorw("[List] Failed to query Goods list")
 		HandleGrpcErrorToHttp(err, ctx)
