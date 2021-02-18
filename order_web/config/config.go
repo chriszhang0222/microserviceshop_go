@@ -1,5 +1,8 @@
 package config
 
+import (
+	"mxshop/common/config"
+)
 type NacosConfig struct {
 	Host      string `mapstructure:"host" json:"host"`
 	Port      int    `mapstructure:"port" json:"port"`
@@ -43,4 +46,5 @@ type ServerConfig struct {
 	GoodsSrvInfo  OrderSrvConfig  `mapstructure:"goods_srv" json:"goods_srv"`
 	InventoryInfo OrderSrvConfig  `mapstructure:"inventory_srv" json:"inventory_srv"`
 	AliPayInfo       AlipayConfig   `mapstructure:"alipay" json:"alipay"`
+	JaegerInfo config.JaegerConfig  `mapstructure:"jaeger" json:"jaeger"`
 }
