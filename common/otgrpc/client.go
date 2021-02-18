@@ -1,6 +1,7 @@
 package otgrpc
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/opentracing/opentracing-go/log"
@@ -10,6 +11,7 @@ import (
 	"io"
 	"runtime"
 	"sync/atomic"
+	jaegerClient "github.com/uber/jaeger-client-go"
 )
 
 // OpenTracingClientInterceptor returns a grpc.UnaryClientInterceptor suitable
@@ -39,8 +41,20 @@ func OpenTracingClientInterceptor(tracer opentracing.Tracer, optFuncs ...Option)
 	) error {
 		var err error
 		var parentCtx opentracing.SpanContext
+		ginContext := ctx.Value("ginContext")
+
 		if parent := opentracing.SpanFromContext(ctx); parent != nil {
 			parentCtx = parent.Context()
+		}
+
+		switch ginContext.(type) {
+		case *gin.Context:
+			if itracer, ok := ginContext.(*gin.Context).Get("tracer");ok {
+				tracer = itracer.(opentracing.Tracer)
+			}
+			if parentSpan, ok := ginContext.(*gin.Context).Get("parentSpan");ok{
+				parentCtx = parentSpan.(*jaegerClient.Span).Context()
+			}
 		}
 		if otgrpcOpts.inclusionFunc != nil &&
 			!otgrpcOpts.inclusionFunc(parentCtx, method, req, resp) {
