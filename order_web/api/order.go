@@ -62,7 +62,7 @@ func NewOrder(ctx *gin.Context){
 		HandleValidatorError(ctx, err)
 	}
 	userId, _ := ctx.Get("userId")
-	rsp, err := global.OrderSrvClient.CreateOrder(context.Background(), &proto.OrderRequest{
+	rsp, err := global.OrderSrvClient.CreateOrder(context.WithValue(context.Background(), "ginContext", ctx), &proto.OrderRequest{
 		UserId: int32(userId.(uint)),
 		Name: orderForm.Name,
 		Mobile: orderForm.Mobile,

@@ -3,8 +3,10 @@ package initialize
 import (
 	"fmt"
 	_ "github.com/mbobakov/grpc-consul-resolver"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"mxshop/common/otgrpc"
 	"mxshop/order_web/global"
 	"mxshop/order_web/proto"
 	"sync"
@@ -57,7 +59,8 @@ func InitSrvConn(){
 		orderConn, err := grpc.Dial(
 			fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.OrderSrvInfo.Name),
 			grpc.WithInsecure(),
-			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`))
+			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),)
 
 		if err != nil{
 			zap.S().Fatalf("[InitSrvConn] Failed to connect to %s", global.ServerConfig.OrderSrvInfo.Name)
@@ -72,6 +75,7 @@ func InitSrvConn(){
 			fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.GoodsSrvInfo.Name),
 			grpc.WithInsecure(),
 			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
 		)
 		if err != nil {
 			zap.S().Fatal("[InitSrvConn]  Failed to connect to GoodsService")
@@ -86,6 +90,7 @@ func InitSrvConn(){
 			fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.InventoryInfo.Name),
 			grpc.WithInsecure(),
 			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
 		)
 		if err != nil {
 			zap.S().Fatal("[InitSrvConn] Failed to connect to Inventory service")
