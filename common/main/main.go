@@ -40,4 +40,8 @@ Loop:
 }
 
 func main(){
+	ctx, cancel := context.WithCancel(context.Background())
+	go startService(ctx)
+	time.Sleep(5 * time.Second)
+	cancel()
 }
