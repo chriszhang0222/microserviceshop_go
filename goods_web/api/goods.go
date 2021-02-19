@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	sentinel "github.com/alibaba/sentinel-golang/api"
+	"github.com/alibaba/sentinel-golang/core/base"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"mxshop/goods_web/forms"
@@ -54,12 +56,22 @@ func List(ctx *gin.Context){
 	goodsSrvClient := global.GoodsSrvClient
 	context := context.WithValue(context.Background(), "ginContext", ctx)
 
+
+	e,b := sentinel.Entry("goods-srv", sentinel.WithTrafficType(base.Inbound))
+	if b != nil {
+		ctx.JSON(http.StatusTooManyRequests, gin.H{
+			"msg": "Too many requests",
+		})
+		return
+	}
+
 	list, err := goodsSrvClient.GoodsList(context, request)
 	if err != nil {
 		zap.S().Errorw("[List] Failed to query Goods list")
 		HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
+	e.Exit()
 	res := gin.H{}
 	res["total"] = list.Total
 	goodsList := make([]interface{}, 0)

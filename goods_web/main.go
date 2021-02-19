@@ -37,6 +37,7 @@ func main(){
 	initialize.InitLogger()
 	parsePort()
 	initialize.InitSrvConn()
+	initialize.InitSentinel()
 	Router := initialize.InitRouter()
 	serverConfig := global.ServerConfig
 	serviceId := fmt.Sprintf("%s", uuid.NewV4())
