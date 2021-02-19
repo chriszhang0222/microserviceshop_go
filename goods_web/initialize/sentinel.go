@@ -17,7 +17,7 @@ func InitSentinel(){
 		{
 			Resource: "goods-srv",
 			TokenCalculateStrategy: flow.Direct,
-			ControlBehavior: flow.Throttling,
+			ControlBehavior: flow.Reject,
 			Threshold: 10,
 			StatIntervalInMs: 5000,
 		},
